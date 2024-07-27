@@ -3,6 +3,10 @@ package com.sbs.java.board;
 import com.sbs.java.board.article.Article;
 import com.sbs.java.board.container.Container;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -36,9 +40,57 @@ public class App {
 
         Article article = new Article(id, subject, content);
 
-        articles.add(article);
+        // DB 연결 및 insert 쿼리
+        String url = "jdbc:mysql://127.0.0.1:3306/JDBC_board?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul&useOldAliasMetadataBehavior=true&zeroDateTimeNehavior=convertToNull";
+        String user = "sbsst"; // 계정이 root면 "root" 입력
+        String password = "sbs123414"; // 비밀번호가 없다면 ""(공백) 입력
 
-        System.out.printf("%d번 게시물이 추가되었습니다.\n", id);
+        Connection conn = null;
+        PreparedStatement pstat = null;
+
+        try {
+          // MySQL JDBC 드라이버 로드
+          Class.forName("com.mysql.cj.jdbc.Driver");
+
+          // 데이터베이스 연결
+          conn = DriverManager.getConnection(url, user, password);
+
+          String sql = "INSERT INTO article";
+          sql += " SET regDate = NOW()";
+          sql += ", updateDate = NOW()";
+          sql += ", `subject` = '%s'".formatted(subject);
+          sql += ", content = '%s';".formatted(content);
+
+          System.out.println("sql : " + sql);
+
+          pstat = conn.prepareStatement(sql);
+          pstat.executeUpdate();
+
+        } catch (ClassNotFoundException e) {
+          System.out.println("JDBC 드라이버를 찾을 수 없습니다.");
+          e.printStackTrace();
+        } catch (SQLException e) {
+          System.out.println("데이터베이스 연결 실패!");
+          e.printStackTrace();
+        } finally {
+          // 자원 정리
+          try {
+            if (pstat != null && !pstat.isClosed()) {
+              pstat.close();
+            }
+          } catch (SQLException e) {
+            e.printStackTrace();
+          }
+          try {
+            if (conn != null && !conn.isClosed()) {
+              conn.close();
+            }
+          } catch (SQLException e) {
+            e.printStackTrace();
+          }
+        }
+
+        System.out.printf("%d번 게시물이 추가되었습니다.\n", article.getId());
       }
       else if (cmd.equals("/usr/article/list")) {
         System.out.println("== 게시물 리스트 ==");

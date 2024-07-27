@@ -2,6 +2,8 @@ package com.sbs.java.board.article;
 
 public class Article {
   private int id;
+  private String regDate;
+  private String updateDate;
   private String subject;
   private String content;
 
@@ -25,6 +27,14 @@ public class Article {
     this.content = content;
   }
 
+  public Article(int id, String regDate, String updateDate, String subject, String content) {
+    this.id = id;
+    this.regDate = regDate;
+    this.updateDate = updateDate;
+    this.subject = subject;
+    this.content = content;
+  }
+
   public Article(int id, String subject, String content) {
     this.id = id;
     this.subject = subject;
@@ -35,6 +45,8 @@ public class Article {
   public String toString() {
     return "Article{" +
         "id=" + id +
+        ", regDate='" + regDate + '\'' +
+        ", updateDate='" + updateDate + '\'' +
         ", subject='" + subject + '\'' +
         ", content='" + content + '\'' +
         '}';

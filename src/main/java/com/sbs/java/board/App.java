@@ -32,7 +32,7 @@ public class App {
         MysqlUtil.setDBInfo("localhost", "sbsst", "sbs123414", "JDBC_board");
         MysqlUtil.setDevMode(isDevMode());
         // DB 끝
-        
+
         // 액션메서드 시작
         doAction(rq, sc);
       }
@@ -76,15 +76,27 @@ public class App {
         return;
       }
 
-      for(Map<String, Object> articleMap : articlesListMap) {
+      for (Map<String, Object> articleMap : articlesListMap) {
         System.out.printf("%d / %s\n", (int) articleMap.get("id"), (String) articleMap.get("subject"));
       }
 
     } else if (rq.getUrlPath().equals("/usr/article/modify")) {
       int id = rq.getIntParam("id", 0);
 
-      if(id == 0) {
+      if (id == 0) {
         System.out.println("id를 올바르게 입력해주세요.");
+        return;
+      }
+
+      SecSql sql = new SecSql();
+      sql.append("SELECT COUNT(*) > 0");
+      sql.append("FROM article");
+      sql.append("WHERE id = ?", id);
+
+      boolean articleIsEmpty = MysqlUtil.selectRowBooleanValue(sql);
+
+      if(!articleIsEmpty) {
+        System.out.printf("%d번 게시물은 존재하지 않습니다.\n", id);
         return;
       }
 
@@ -96,7 +108,7 @@ public class App {
       System.out.print("내용 : ");
       String content = sc.nextLine();
 
-      SecSql sql = new SecSql();
+      sql = new SecSql();
       sql.append("UPDATE article");
       sql.append("SET updateDate = NOW()");
       sql.append(", `subject` = ?", subject);
@@ -106,8 +118,37 @@ public class App {
       MysqlUtil.update(sql);
 
       System.out.printf("%d번 게시물이 수정되었습니다.\n", id);
-    }
-    else if (rq.getUrlPath().equals("exit")) {
+    } else if (rq.getUrlPath().equals("/usr/article/delete")) {
+      int id = rq.getIntParam("id", 0);
+
+      if (id == 0) {
+        System.out.println("id를 올바르게 입력해주세요.");
+        return;
+      }
+
+      SecSql sql = new SecSql();
+      sql.append("SELECT COUNT(*) > 0");
+      sql.append("FROM article");
+      sql.append("WHERE id = ?", id);
+
+      boolean articleIsEmpty = MysqlUtil.selectRowBooleanValue(sql);
+
+      if(!articleIsEmpty) {
+        System.out.printf("%d번 게시물은 존재하지 않습니다.\n", id);
+        return;
+      }
+
+      System.out.printf("== %d번 게시물 삭제 ==\n", id);
+
+      sql = new SecSql();
+      sql.append("DELETE");
+      sql.append("FROM article");
+      sql.append("WHERE id = ?", id);
+
+      MysqlUtil.delete(sql);
+
+      System.out.printf("%d번 게시물이 삭제되었습니다.\n", id);
+    } else if (rq.getUrlPath().equals("exit")) {
       System.out.println("프로그램을 종료합니다.");
       System.exit(0);
     } else {

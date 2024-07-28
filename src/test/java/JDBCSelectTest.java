@@ -44,7 +44,7 @@ public class JDBCSelectTest {
         String subject = rs.getString("subject");
         String content = rs.getString("content");
 
-        Article article = new Article(id, regDate, updateDate, subject, content);
+        Article article = new Article(id, subject, content);
         articles.add(article);
       }
 

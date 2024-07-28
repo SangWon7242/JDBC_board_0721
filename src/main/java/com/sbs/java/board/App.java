@@ -2,22 +2,20 @@ package com.sbs.java.board;
 
 import com.sbs.java.board.article.Article;
 import com.sbs.java.board.container.Container;
+import com.sbs.java.board.util.MysqlUtil;
+import com.sbs.java.board.util.SecSql;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
-public class App {
-  public List<Article> articles;
-  public int lastArticleId;
 
-  public App() {
-    articles = new ArrayList<>();
-    lastArticleId = 0;
+public class App {
+  private static boolean isDevMode() {
+    // 이 부분을 false로 바꾸면 production 모드 이다.
+    // true는 개발자 모드이다.(개발할 때 좋다.)
+    return true;
   }
 
   void run() {
@@ -30,48 +28,20 @@ public class App {
 
         Rq rq = new Rq(cmd);
 
-        // DB 연결시작
-        String url = "jdbc:mysql://127.0.0.1:3306/JDBC_board?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul&useOldAliasMetadataBehavior=true&zeroDateTimeNehavior=convertToNull";
-        String user = "sbsst"; // 계정이 root면 "root" 입력
-        String password = "sbs123414"; // 비밀번호가 없다면 ""(공백) 입력
-
-        Connection conn = null;
-        PreparedStatement pstat = null;
-
-        try {
-          // MySQL JDBC 드라이버 로드
-          Class.forName("com.mysql.cj.jdbc.Driver");
-
-          // 데이터베이스 연결
-          conn = DriverManager.getConnection(url, user, password);
-
-          // 액션메서드 시작
-          doAction(conn, pstat, rq, sc);
-
-        } catch (ClassNotFoundException e) {
-          System.out.println("JDBC 드라이버를 찾을 수 없습니다.");
-          e.printStackTrace();
-        } catch (SQLException e) {
-          System.out.println("데이터베이스 연결 실패!");
-          e.printStackTrace();
-        } finally {
-          // 연결 닫기
-          try {
-            if (conn != null && !conn.isClosed()) {
-              conn.close();
-            }
-          } catch (SQLException e) {
-            e.printStackTrace();
-          }
-        }
-        // DB 연결해제
+        // DB 세팅
+        MysqlUtil.setDBInfo("localhost", "sbsst", "sbs123414", "JDBC_board");
+        MysqlUtil.setDevMode(isDevMode());
+        // DB 끝
+        
+        // 액션메서드 시작
+        doAction(rq, sc);
       }
     } finally {
       sc.close();
     }
   }
 
-  private void doAction(Connection conn, PreparedStatement pstat, Rq rq, Scanner sc) {
+  private void doAction(Rq rq, Scanner sc) {
     if (rq.getUrlPath().equals("/usr/article/write")) {
       System.out.println("== 게시물 작성 ==");
 
@@ -81,49 +51,33 @@ public class App {
       System.out.print("내용 : ");
       String content = sc.nextLine();
 
-      int id = ++lastArticleId;
+      SecSql sql = new SecSql();
+      sql.append("INSERT INTO article");
+      sql.append("SET regDate = NOW()");
+      sql.append(", updateDate = NOW()");
+      sql.append(", `subject` = ?", subject);
+      sql.append(", content = ?", content);
 
-      Article article = new Article(id, subject, content);
+      int id = MysqlUtil.insert(sql);
 
-      try {
-
-        String sql = "INSERT INTO article";
-        sql += " SET regDate = NOW()";
-        sql += ", updateDate = NOW()";
-        sql += ", `subject` = '%s'".formatted(subject);
-        sql += ", content = '%s';".formatted(content);
-
-        System.out.println("sql : " + sql);
-
-        pstat = conn.prepareStatement(sql);
-        pstat.executeUpdate();
-
-      } catch (SQLException e) {
-        System.out.println("데이터베이스 연결 실패!");
-        e.printStackTrace();
-      } finally {
-        // 자원 정리
-        try {
-          if (pstat != null && !pstat.isClosed()) {
-            pstat.close();
-          }
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-
-      System.out.printf("%d번 게시물이 추가되었습니다.\n", article.getId());
+      System.out.printf("%d번 게시물이 추가되었습니다.\n", id);
     } else if (rq.getUrlPath().equals("/usr/article/list")) {
       System.out.println("== 게시물 리스트 ==");
 
-      if (articles.isEmpty()) {
+      SecSql sql = new SecSql();
+      sql.append("SELECT *");
+      sql.append("FROM article");
+      sql.append("ORDER BY id DESC");
+
+      List<Map<String, Object>> articlesListMap = MysqlUtil.selectRows(sql);
+
+      if (articlesListMap.isEmpty()) {
         System.out.println("게시물은 존재하지 않습니다.");
         return;
       }
 
-      for (int i = articles.size() - 1; i >= 0; i--) {
-        Article article = articles.get(i);
-        System.out.printf("%d / %s\n", article.getId(), article.getSubject());
+      for(Map<String, Object> articleMap : articlesListMap) {
+        System.out.printf("%d / %s\n", (int) articleMap.get("id"), (String) articleMap.get("subject"));
       }
 
     } else if (rq.getUrlPath().equals("/usr/article/modify")) {
@@ -142,28 +96,14 @@ public class App {
       System.out.print("내용 : ");
       String content = sc.nextLine();
 
-      try {
-        String sql = "UPDATE article";
-        sql += " SET updateDate = NOW()";
-        sql += ", `subject` = '%s'".formatted(subject);
-        sql += ", content = '%s'".formatted(content);
-        sql += " WHERE id = %d;".formatted(id);
+      SecSql sql = new SecSql();
+      sql.append("UPDATE article");
+      sql.append("SET updateDate = NOW()");
+      sql.append(", `subject` = ?", subject);
+      sql.append(", content = ?", content);
+      sql.append("WHERE id = ?", id);
 
-        pstat = conn.prepareStatement(sql);
-        pstat.executeUpdate(sql);
-
-      } catch (SQLException e) {
-        System.out.println("데이터베이스 연결 실패!");
-        e.printStackTrace();
-      } finally {
-        try {
-          if (pstat != null && !pstat.isClosed()) {
-            pstat.close();
-          }
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
+      MysqlUtil.update(sql);
 
       System.out.printf("%d번 게시물이 수정되었습니다.\n", id);
     }

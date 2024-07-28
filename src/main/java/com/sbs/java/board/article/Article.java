@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 public class Article {
-  private int id;
+  private final int id;
   private LocalDateTime regDate;
   private LocalDateTime updateDate;
   private String subject;
@@ -16,14 +16,6 @@ public class Article {
     this.updateDate = (LocalDateTime) articleMap.get("updateDate");
     this.subject = (String) articleMap.get("subject");
     this.content = (String) articleMap.get("content");
-  }
-
-  public Article(int id, LocalDateTime regDate, LocalDateTime updateDate, String subject, String content) {
-    this.id = id;
-    this.regDate = regDate;
-    this.updateDate = updateDate;
-    this.subject = subject;
-    this.content = content;
   }
 
   public Article(int id, String subject, String content) {

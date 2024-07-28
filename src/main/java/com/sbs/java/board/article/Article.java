@@ -36,6 +36,14 @@ public class Article {
     return id;
   }
 
+  public LocalDateTime getRegDate() {
+    return regDate;
+  }
+
+  public LocalDateTime getUpdateDate() {
+    return updateDate;
+  }
+
   public String getSubject() {
     return subject;
   }

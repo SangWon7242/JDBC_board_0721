@@ -1,10 +1,15 @@
 package com.sbs.java.board.article;
 
+import lombok.*;
+
 import java.time.LocalDateTime;
 import java.util.Map;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 public class Article {
-  private final int id;
+  private int id;
   private LocalDateTime regDate;
   private LocalDateTime updateDate;
   private String subject;
@@ -22,44 +27,5 @@ public class Article {
     this.id = id;
     this.subject = subject;
     this.content = content;
-  }
-
-  public int getId() {
-    return id;
-  }
-
-  public LocalDateTime getRegDate() {
-    return regDate;
-  }
-
-  public LocalDateTime getUpdateDate() {
-    return updateDate;
-  }
-
-  public String getSubject() {
-    return subject;
-  }
-
-  public String getContent() {
-    return content;
-  }
-
-  public void setSubject(String subject) {
-    this.subject = subject;
-  }
-
-  public void setContent(String content) {
-    this.content = content;
-  }
-
-  @Override
-  public String toString() {
-    return "Article{" +
-        "id=" + id +
-        ", regDate='" + regDate + '\'' +
-        ", updateDate='" + updateDate + '\'' +
-        ", subject='" + subject + '\'' +
-        ", content='" + content + '\'' +
-        '}';
   }
 }

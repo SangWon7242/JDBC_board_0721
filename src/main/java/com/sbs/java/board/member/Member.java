@@ -1,15 +1,22 @@
 package com.sbs.java.board.member;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 import java.util.Map;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 public class Member {
-  private final int id;
-  private final LocalDateTime regDate;
-  private final LocalDateTime updateDate;
-  private final String loginId;
+  private int id;
+  private LocalDateTime regDate;
+  private LocalDateTime updateDate;
+  private String loginId;
   private String loginPw;
-  private final String name;
+  private String name;
 
   public Member(Map<String, Object> articleMap) {
     this.id = (int) articleMap.get("id");
@@ -20,16 +27,4 @@ public class Member {
     this.name = (String) articleMap.get("name");
   }
 
-
-  @Override
-  public String toString() {
-    return "Member{" +
-        "id=" + id +
-        ", regDate=" + regDate +
-        ", updateDate=" + updateDate +
-        ", loginId='" + loginId + '\'' +
-        ", loginPw='" + loginPw + '\'' +
-        ", name='" + name + '\'' +
-        '}';
-  }
 }

@@ -200,6 +200,18 @@ public class App {
           System.out.println("로그인 아이디를 입력해주세요.");
           continue;
         }
+
+        SecSql sql = new SecSql();
+        sql.append("SELECT COUNT(*) > 0");
+        sql.append("FROM `member`");
+        sql.append("WHERE loginId = ?", loginId);
+
+        boolean isLoginDup = MysqlUtil.selectRowBooleanValue(sql);
+
+        if(isLoginDup) {
+          System.out.printf("\"%s\"(은)는 이미 사용중인 로그인 아이디입니다.\n", loginId);
+          continue;
+        }
         
         break;
       }

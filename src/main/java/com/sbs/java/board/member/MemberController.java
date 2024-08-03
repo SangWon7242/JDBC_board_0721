@@ -1,10 +1,14 @@
 package com.sbs.java.board.member;
 
 import com.sbs.java.board.container.Container;
-import com.sbs.java.board.util.MysqlUtil;
-import com.sbs.java.board.util.SecSql;
 
 public class MemberController {
+  private MemberService memberService;
+
+  public MemberController() {
+    memberService = Container.memberService;
+  }
+
   public void join() {
     String loginId;
     String loginPw;
@@ -23,14 +27,9 @@ public class MemberController {
         continue;
       }
 
-      SecSql sql = new SecSql();
-      sql.append("SELECT COUNT(*) > 0");
-      sql.append("FROM `member`");
-      sql.append("WHERE loginId = ?", loginId);
+      Member member = memberService.findByLoginId(loginId);
 
-      boolean isLoginDup = MysqlUtil.selectRowBooleanValue(sql);
-
-      if(isLoginDup) {
+      if(member != null) {
         System.out.printf("\"%s\"(은)는 이미 사용중인 로그인 아이디입니다.\n", loginId);
         continue;
       }
@@ -81,16 +80,8 @@ public class MemberController {
       break;
     }
 
-    SecSql sql = new SecSql();
-    sql.append("INSERT INTO `member`");
-    sql.append("SET regDate = NOW()");
-    sql.append(", updateDate = NOW()");
-    sql.append(", loginId = ?", loginId);
-    sql.append(", loginPw = ?", loginPw);
-    sql.append(", name = ?", name);
+    memberService.join(loginId, loginPw, name);
 
-    int id = MysqlUtil.insert(sql);
-
-    System.out.printf("%d번 회원이 생성되었습니다.\n", id);
+    System.out.printf("\"%s\"님 회원 가입 되었습니다.\n", loginId);
   }
 }

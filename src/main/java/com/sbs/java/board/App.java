@@ -43,7 +43,7 @@ public class App {
     ArticleController articleController = Container.articleController;
 
     if (rq.getUrlPath().equals("/usr/article/write")) {
-      articleController.doWrite();
+      articleController.doWrite(rq);
     } else if (rq.getUrlPath().equals("/usr/article/list")) {
       articleController.showList();
     } else if (rq.getUrlPath().equals("/usr/article/detail")) {

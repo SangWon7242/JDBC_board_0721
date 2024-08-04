@@ -2,6 +2,7 @@ package com.sbs.java.board.article;
 
 import com.sbs.java.board.Rq;
 import com.sbs.java.board.container.Container;
+import com.sbs.java.board.member.Member;
 
 import java.util.List;
 
@@ -12,7 +13,12 @@ public class ArticleController {
     articleService = Container.articleService;
   }
 
-  public void doWrite() {
+  public void doWrite(Rq rq) {
+    if(rq.isNotLogined()) {
+      System.out.println("로그인 후 사용해주세요.");
+      return;
+    }
+
     System.out.println("== 게시물 작성 ==");
 
     System.out.print("제목 : ");
@@ -31,7 +37,9 @@ public class ArticleController {
       return;
     }
 
-    int id = articleService.write(subject, content);
+    Member member = (Member) rq.getSessionAttr("loginedMember");
+
+    int id = articleService.write(member.getId(), subject, content);
 
     System.out.printf("%d번 게시물이 추가되었습니다.\n", id);
   }

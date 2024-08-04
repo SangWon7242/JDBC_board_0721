@@ -14,7 +14,7 @@ public class ArticleController {
   }
 
   public void doWrite(Rq rq) {
-    if(rq.isNotLogined()) {
+    if (rq.isNotLogined()) {
       System.out.println("로그인 후 사용해주세요.");
       return;
     }
@@ -24,7 +24,7 @@ public class ArticleController {
     System.out.print("제목 : ");
     String subject = Container.scanner.nextLine();
 
-    if(subject.isEmpty()) {
+    if (subject.isEmpty()) {
       System.out.println("제목을 입력해주세요.");
       return;
     }
@@ -32,7 +32,7 @@ public class ArticleController {
     System.out.print("내용 : ");
     String content = Container.scanner.nextLine();
 
-    if(content.isEmpty()) {
+    if (content.isEmpty()) {
       System.out.println("내용을 입력해주세요.");
       return;
     }
@@ -85,6 +85,11 @@ public class ArticleController {
   }
 
   public void doModify(Rq rq) {
+    if (rq.isNotLogined()) {
+      System.out.println("로그인 후 사용해주세요.");
+      return;
+    }
+
     int id = rq.getIntParam("id", 0);
 
     if (id == 0) {
@@ -99,12 +104,19 @@ public class ArticleController {
       return;
     }
 
+    Member member = (Member) rq.getSessionAttr("loginedMember");
+
+    if(article.getMemberId() != member.getId()) {
+      System.out.println("권한이 없습니다.");
+      return;
+    }
+
     System.out.println("== 게시물 수정 ==");
 
     System.out.print("제목 : ");
     String subject = Container.scanner.nextLine();
 
-    if(subject.isEmpty()) {
+    if (subject.isEmpty()) {
       System.out.println("제목을 입력해주세요.");
       return;
     }
@@ -112,7 +124,7 @@ public class ArticleController {
     System.out.print("내용 : ");
     String content = Container.scanner.nextLine();
 
-    if(content.isEmpty()) {
+    if (content.isEmpty()) {
       System.out.println("내용을 입력해주세요.");
       return;
     }
@@ -123,6 +135,11 @@ public class ArticleController {
   }
 
   public void doDelete(Rq rq) {
+    if (rq.isNotLogined()) {
+      System.out.println("로그인 후 사용해주세요.");
+      return;
+    }
+
     int id = rq.getIntParam("id", 0);
 
     if (id == 0) {
@@ -134,6 +151,13 @@ public class ArticleController {
 
     if (article == null) {
       System.out.printf("%d번 게시물은 존재하지 않습니다.\n", id);
+      return;
+    }
+
+    Member member = (Member) rq.getSessionAttr("loginedMember");
+
+    if(article.getMemberId() != member.getId()) {
+      System.out.println("권한이 없습니다.");
       return;
     }
 

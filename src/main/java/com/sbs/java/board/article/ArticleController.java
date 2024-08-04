@@ -47,11 +47,12 @@ public class ArticleController {
   public void showList(Rq rq) {
     int page = rq.getIntParam("page", 1);
     String searchKeyword = rq.getParam("searchKeyword", "");
+    String searchKeywordTypeCode = rq.getParam("searchKeywordTypeCode", "");
     int pageItemCount = 10;
 
     System.out.println("== 게시물 리스트 ==");
 
-    List<Article> articles = articleService.getArticles(page, pageItemCount, searchKeyword);
+    List<Article> articles = articleService.getArticles(page, pageItemCount, searchKeyword, searchKeywordTypeCode);
 
     if (articles.isEmpty()) {
       System.out.println("게시물은 존재하지 않습니다.");

@@ -17,12 +17,13 @@ public class ArticleService {
     return articleRepository.write(memberId, subject, content);
   }
 
-  public List<Article> getArticles(int page, int pageItemCount, String searchKeyword) {
+  public List<Article> getArticles(int page, int pageItemCount, String searchKeyword, String searchKeywordTypeCode) {
     int limitFrom = (page - 1) * pageItemCount;
     int limitTake = pageItemCount;
 
     Map<String, Object> args = new HashMap<>();
     args.put("searchKeyword", searchKeyword);
+    args.put("searchKeywordTypeCode", searchKeywordTypeCode);
     args.put("limitFrom", limitFrom);
     args.put("limitTake", limitTake);
 

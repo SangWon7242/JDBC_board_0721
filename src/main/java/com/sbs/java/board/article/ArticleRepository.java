@@ -23,9 +23,14 @@ public class ArticleRepository {
   public List<Article> getArticles(Map<String, Object> args) {
 
     String searchKeyword = "";
+    String searchKeywordTypeCode = "";
 
     if(args.containsKey("searchKeyword")) {
       searchKeyword = (String) args.get("searchKeyword");
+    }
+
+    if(args.containsKey("searchKeywordTypeCode")) {
+      searchKeywordTypeCode = (String) args.get("searchKeywordTypeCode");
     }
 
     int limitFrom = -1;
@@ -47,7 +52,16 @@ public class ArticleRepository {
     sql.append("ON A.memberId = M.id");
 
     if(!searchKeyword.isEmpty()) {
-      sql.append("WHERE A.`subject` LIKE CONCAT('%', ?, '%')", searchKeyword);
+      switch (searchKeywordTypeCode) {
+        case "subject" -> sql.append("WHERE A.`subject` LIKE CONCAT('%', ?, '%')", searchKeyword);
+        case "content" -> sql.append("WHERE A.content LIKE CONCAT('%', ?, '%')", searchKeyword);
+        case "subject,content"
+            -> {
+          sql.append("WHERE A.`subject` LIKE CONCAT('%', ?, '%')", searchKeyword);
+          sql.append("OR A.content LIKE CONCAT('%', ?, '%')", searchKeyword);
+        }
+
+      }
     }
 
     sql.append("ORDER BY A.id DESC");

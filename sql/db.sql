@@ -42,16 +42,24 @@ SELECT * FROM `member`;
 # 게시물 테이블에 memberId 칼럼 추가
 ALTER TABLE article ADD COLUMN memberId INT UNSIGNED NOT NULL AFTER updateDate;
 
-SELECT * FROM article;
+# 게시물 테스트 데이터
+INSERT INTO article
+SET regDate = NOW(),
+updateDate = NOW(),
+memberId = 2,
+`subject` = '제목1',
+content = '내용1';
 
+INSERT INTO article
+SET regDate = NOW(),
+updateDate = NOW(),
+memberId = 2,
+`subject` = '제목2',
+content = '내용2';
 
-SELECT M.name AS extra__writerName
-FROM article AS A
-INNER JOIN `member` AS M
-ON A.memberId = M.id;
-
-SELECT *, M.name AS extra__writerName
-FROM article AS A
-INNER JOIN `member` AS M
-ON A.memberId = M.id
-ORDER BY A.id DESC;
+INSERT INTO article
+SET regDate = NOW(),
+updateDate = NOW(),
+memberId = 2,
+`subject` = '제목3',
+content = '내용3';

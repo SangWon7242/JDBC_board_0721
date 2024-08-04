@@ -1,5 +1,6 @@
 package com.sbs.java.board.member;
 
+import com.sbs.java.board.Rq;
 import com.sbs.java.board.container.Container;
 
 public class MemberController {
@@ -85,10 +86,15 @@ public class MemberController {
     System.out.printf("\"%s\"님 회원 가입 되었습니다.\n", loginId);
   }
 
-  public void login() {
+  public void login(Rq rq) {
     String loginId;
     String loginPw;
     Member member;
+
+    if(rq.isLogined()) {
+      System.out.println("로그아웃 후 이용해주세요.");
+      return;
+    }
 
     System.out.println("== 로그인 ==");
 
@@ -143,6 +149,29 @@ public class MemberController {
       break;
     }
 
+    rq.login("loginedMember", member);
+
     System.out.printf("\"%s\"님 로그인 되었습니다.\n", member.getLoginId());
+  }
+
+  public void mypage(Rq rq) {
+    if(rq.isNotLogined()) {
+      System.out.println("로그인 후 이용해주세요.");
+      return;
+    }
+
+    Member member = (Member) rq.getSessionAttr("loginedMember");
+
+    System.out.printf("현재 로그인한 회원은 \"%s\"님 입니다.\n", member.getLoginId());
+  }
+
+  public void logout(Rq rq) {
+    if(rq.isNotLogined()) {
+      System.out.println("로그인 후 이용해주세요.");
+      return;
+    }
+
+    rq.removeSessionAttr("loginedMember");
+    System.out.println("로그아웃 되었습니다.");
   }
 }

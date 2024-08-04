@@ -6,7 +6,7 @@ import com.sbs.java.board.util.SecSql;
 import java.util.Map;
 
 public class MemberRepository {
-  public Member findByLoginId(String loginId) {
+  public Member  findByLoginId(String loginId) {
     SecSql sql = new SecSql();
     sql.append("SELECT *");
     sql.append("FROM `member`");

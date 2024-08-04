@@ -1,14 +1,10 @@
 package com.sbs.java.board;
 
-import com.sbs.java.board.article.Article;
 import com.sbs.java.board.article.ArticleController;
 import com.sbs.java.board.container.Container;
 import com.sbs.java.board.member.MemberController;
 import com.sbs.java.board.util.MysqlUtil;
-import com.sbs.java.board.util.SecSql;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 
@@ -58,8 +54,12 @@ public class App {
       articleController.doDelete(rq);
     } else if (rq.getUrlPath().equals("/usr/member/join")) {
       memberController.join();
-    }  else if (rq.getUrlPath().equals("/usr/member/login")) {
-      memberController.login();
+    } else if (rq.getUrlPath().equals("/usr/member/login")) {
+      memberController.login(rq);
+    } else if (rq.getUrlPath().equals("/usr/member/logout")) {
+      memberController.logout(rq);
+    } else if (rq.getUrlPath().equals("/usr/member/mypage")) {
+      memberController.mypage(rq);
     } else if (rq.getUrlPath().equals("exit")) {
       System.out.println("프로그램을 종료합니다.");
       System.exit(0);

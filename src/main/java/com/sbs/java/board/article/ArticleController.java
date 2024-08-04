@@ -68,6 +68,8 @@ public class ArticleController {
       return;
     }
 
+    articleService.increaseHit(id);
+
     Article article = articleService.findByArticleId(id);
 
     if (article == null) {
@@ -82,6 +84,7 @@ public class ArticleController {
     System.out.printf("작성자 : %s\n", article.getExtra__writerName());
     System.out.printf("제목 : %s\n", article.getSubject());
     System.out.printf("내용 : %s\n", article.getContent());
+    System.out.printf("조회수 : %s\n", article.getHit());
   }
 
   public void doModify(Rq rq) {

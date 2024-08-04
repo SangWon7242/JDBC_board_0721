@@ -15,6 +15,7 @@ public class Article {
   private int memberId;
   private String subject;
   private String content;
+  private int hit;
 
   private String extra__writerName;
 
@@ -24,6 +25,7 @@ public class Article {
     this.updateDate = (LocalDateTime) articleMap.get("updateDate");
     this.subject = (String) articleMap.get("subject");
     this.content = (String) articleMap.get("content");
+    this.hit = (int) articleMap.get("hit");
 
     if(articleMap.get("extra__writerName") != null) {
       this.extra__writerName = (String) articleMap.get("extra__writerName");

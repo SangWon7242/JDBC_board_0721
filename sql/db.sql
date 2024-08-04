@@ -5,21 +5,21 @@ USE JDBC_board
 
 # article 테이블 생성
 CREATE TABLE article (
-	id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	regDate DATETIME NOT NULL,
-	updateDate DATETIME NOT NULL,
-	`subject` CHAR(100) NOT NULL,
-	content TEXT NOT NULL
+id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+regDate DATETIME NOT NULL,
+updateDate DATETIME NOT NULL,
+`subject` CHAR(100) NOT NULL,
+content TEXT NOT NULL
 );
 
 # member 테이블 생성
 CREATE TABLE `member` (
-	id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	regDate DATETIME NOT NULL,
-	updateDate DATETIME NOT NULL,
-	loginId CHAR(50) NOT NULL,
-	loginPw CHAR(100) NOT NULL,
-	`name` CHAR(50) NOT NULL
+id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+regDate DATETIME NOT NULL,
+updateDate DATETIME NOT NULL,
+loginId CHAR(50) NOT NULL,
+loginPw CHAR(100) NOT NULL,
+`name` CHAR(50) NOT NULL
 );
 
 # 임시 회원
@@ -69,3 +69,15 @@ memberId = 2,
 `subject` = '제목3',
 content = '내용3',
 hit = 15;
+
+SELECT *, M.name AS extra__writerName
+FROM article AS A
+INNER JOIN `member` AS M
+ON A.memberId = M.id
+WHERE A.`subject` LIKE '%제목3%'
+ORDER BY A.id DESC;
+
+# 테스트 데이터 대량 생성
+INSERT INTO article (regDate, updateDate, memberId, `subject`, content, hit)
+SELECT NOW(), NOW(), 2, CONCAT("제목-", UUID()), CONCAT("내용-", UUID()), FLOOR(1 + (RAND() * 100))
+FROM article;

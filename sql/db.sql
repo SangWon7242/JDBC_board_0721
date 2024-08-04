@@ -12,13 +12,6 @@ CREATE TABLE article (
 	content TEXT NOT NULL
 );
 
-# 게시물 테스트 데이터
-INSERT INTO article
-SET regDate = NOW(),
-updateDate = NOW(),
-`subject` = CONCAT('제목', FLOOR(RAND() * 101)),
-content = CONCAT('내용', FLOOR(RAND() * 101));
-
 # member 테이블 생성
 CREATE TABLE `member` (
 	id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -28,3 +21,37 @@ CREATE TABLE `member` (
 	loginPw CHAR(100) NOT NULL,
 	`name` CHAR(50) NOT NULL
 );
+
+# 임시 회원
+INSERT INTO `member`
+SET regDate = NOW(),
+updateDate = NOW(),
+loginId = 'admin',
+loginPw = 'admin',
+`name` = '관리자';
+
+INSERT INTO `member`
+SET regDate = NOW(),
+updateDate = NOW(),
+loginId = 'user1',
+loginPw = 'user1',
+`name` = '회원1';
+
+SELECT * FROM `member`;
+
+# 게시물 테이블에 memberId 칼럼 추가
+ALTER TABLE article ADD COLUMN memberId INT UNSIGNED NOT NULL AFTER updateDate;
+
+SELECT * FROM article;
+
+
+SELECT M.name AS extra__writerName
+FROM article AS A
+INNER JOIN `member` AS M
+ON A.memberId = M.id;
+
+SELECT *, M.name AS extra__writerName
+FROM article AS A
+INNER JOIN `member` AS M
+ON A.memberId = M.id
+ORDER BY A.id DESC;
